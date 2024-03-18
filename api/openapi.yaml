@@ -1,0 +1,4803 @@
+openapi: 3.0.0
+info:
+  description: This API covers publicly accessible merchant actions
+  title: The Helcim API
+  version: 2.0.0
+  x-konfig-ignore:
+    object-with-no-properties: true
+    potential-incorrect-type: true
+  x-konfig-has-globally-required-security: true
+servers:
+- url: https://api.helcim.com/v2
+tags:
+- name: Customer
+- name: Payment
+- name: Invoice
+- name: Card Batch
+- name: Card Transaction
+- name: General
+- name: Card Terminal
+- name: Helcim Pay
+- description: TODO
+  name: TODO
+paths:
+  /connection-test:
+    get:
+      operationId: General_testConnectivityToHelcimApi
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralTestConnectivityToHelcimApiResponse'
+          description: Successful
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralTestConnectivityToHelcimApi400Response'
+          description: Bad Request
+          x-do-not-generate: true
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralTestConnectivityToHelcimApi401Response'
+          description: Unauthorized
+          x-do-not-generate: true
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralTestConnectivityToHelcimApi403Response'
+          description: Unauthorized
+          x-do-not-generate: true
+      security:
+      - ApiAccessAuth: []
+      summary: Tests connectivity to the Helcim API
+      tags:
+      - General
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--connection-test
+      x-accepts: application/json
+  /payment/purchase:
+    post:
+      operationId: Payment_processPurchaseTransaction
+      parameters:
+      - description: Idempotency Key. Alphanumeric 25-characters
+        explode: false
+        in: header
+        name: idempotency-key
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/purchase_request'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulPaymentResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Process Purchase Transaction
+      tags:
+      - Payment
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--payment-purchase
+      x-content-type: application/json
+      x-accepts: application/json
+  /payment/preauth:
+    post:
+      operationId: Payment_processPreauthTransaction
+      parameters:
+      - description: Idempotency Key. Alphanumeric 25-characters
+        explode: false
+        in: header
+        name: idempotency-key
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/purchase_request'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulPaymentResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Process Preauth Transaction
+      tags:
+      - Payment
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--payment-preauth
+      x-content-type: application/json
+      x-accepts: application/json
+  /payment/capture:
+    post:
+      operationId: Payment_processCaptureTransaction
+      parameters:
+      - description: Idempotency Key. Alphanumeric 25-characters
+        explode: false
+        in: header
+        name: idempotency-key
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaptureRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulPaymentResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Process Capture Transaction
+      tags:
+      - Payment
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--payment-capture
+      x-content-type: application/json
+      x-accepts: application/json
+  /payment/verify:
+    post:
+      operationId: Payment_verifyTransaction
+      parameters:
+      - description: Idempotency Key. Alphanumeric 25-characters
+        explode: false
+        in: header
+        name: idempotency-key
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulPaymentResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Process Verify Transaction
+      tags:
+      - Payment
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--payment-verify
+      x-content-type: application/json
+      x-accepts: application/json
+  /payment/refund:
+    post:
+      operationId: Payment_processRefundTransaction
+      parameters:
+      - description: Idempotency Key. Alphanumeric 25-characters
+        explode: false
+        in: header
+        name: idempotency-key
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Refund_Request'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulPaymentResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Process Refund Transaction
+      tags:
+      - Payment
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--payment-refund
+      x-content-type: application/json
+      x-accepts: application/json
+  /payment/reverse:
+    post:
+      operationId: Payment_reverseTransaction
+      parameters:
+      - description: Idempotency Key. Alphanumeric 25-characters
+        explode: false
+        in: header
+        name: idempotency-key
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Refund_Request_1'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReverseTransactionResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReverseTransactiondefaultResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Process Reverse Transaction
+      tags:
+      - Payment
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--payment-reverse
+      x-content-type: application/json
+      x-accepts: application/json
+  /payment/withdraw:
+    post:
+      operationId: Payment_processWithdrawalTransaction
+      parameters:
+      - description: Idempotency Key. Alphanumeric 25-characters
+        explode: false
+        in: header
+        name: idempotency-key
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/withdraw_request'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulAchTransactionResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Process Withdraw Transaction
+      tags:
+      - Payment
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--payment-withdraw
+      x-content-type: application/json
+      x-accepts: application/json
+  /card-batches/{cardBatchId}:
+    get:
+      operationId: CardBatch_getDetails
+      parameters:
+      - description: The Card Batch Id of the Card Batch you want to get
+        explode: false
+        in: path
+        name: cardBatchId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - description: Includes transaction statistics for the batch
+        example: true
+        explode: true
+        in: query
+        name: collect-stats
+        required: false
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+        style: form
+        x-konfig-original-example: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardBatch'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get Card Batch
+      tags:
+      - Card Batch
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--card-batches-cardBatchId
+      x-accepts: application/json
+  /card-batches/{cardBatchId}/settle:
+    post:
+      operationId: CardBatch_settleBatch
+      parameters:
+      - description: The Card Batch Id of the Card Batch you want to settle
+        explode: false
+        in: path
+        name: cardBatchId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardBatch'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Settles an Open Card Batch
+      tags:
+      - Card Batch
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--card-batches-cardBatchId-settle
+      x-accepts: application/json
+  /card-transactions/{cardTransactionId}:
+    get:
+      operationId: CardTransaction_getById
+      parameters:
+      - description: The Card Transaction Id of the Card Transaction you want to get
+        explode: false
+        in: path
+        name: cardTransactionId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulPaymentResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get Card Transaction by id
+      tags:
+      - Card Transaction
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--card-transactions-cardTransactionId
+      x-accepts: application/json
+  /customers/{customerId}:
+    get:
+      operationId: Customer_getCustomer
+      parameters:
+      - description: The Id of the customer
+        explode: false
+        in: path
+        name: customerId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get customer
+      tags:
+      - Customer
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--customers-customerId
+      x-accepts: application/json
+    put:
+      operationId: Customer_updateDetails
+      parameters:
+      - description: The Id of the customer
+        explode: false
+        in: path
+        name: customerId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerUpdateRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Update customer
+      tags:
+      - Customer
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-put--customers-customerId
+      x-content-type: application/json
+      x-accepts: application/json
+  /customers/{customerId}/cards:
+    get:
+      operationId: Customer_getCards
+      parameters:
+      - description: The Id of the customer
+        explode: false
+        in: path
+        name: customerId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - description: The card token.
+        example: 907af81acc0224e0134949
+        explode: true
+        in: query
+        name: cardToken
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: 907af81acc0224e0134949
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerGetCardsResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get customer cards
+      tags:
+      - Customer
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--customers-customerId-cards
+      x-accepts: application/json
+  /customers/{customerId}/cards/{cardId}:
+    get:
+      operationId: Customer_getCardDetails
+      parameters:
+      - description: The Id of the customer
+        explode: false
+        in: path
+        name: customerId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - description: The Id of the card
+        explode: false
+        in: path
+        name: cardId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerGetCardDetailsResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get customer card
+      tags:
+      - Customer
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--customers-customerId-cards-cardId
+      x-accepts: application/json
+  /customers/{customerId}/bank-accounts:
+    get:
+      operationId: Customer_getBankAccounts
+      parameters:
+      - description: The Id of the customer
+        explode: false
+        in: path
+        name: customerId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - description: The bank account token.
+        explode: true
+        in: query
+        name: bankToken
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Check if bank account is verified or not. use 1 or 0.
+        explode: true
+        in: query
+        name: verified
+        required: false
+        schema:
+          type: number
+        style: form
+      - description: Check if bank account is ready or not. use 1 or 0.
+        explode: true
+        in: query
+        name: ready
+        required: false
+        schema:
+          type: number
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerGetBankAccountsResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get customer bank accounts
+      tags:
+      - Customer
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--customers-customerId-bank-accounts
+      x-accepts: application/json
+  /customers/{customerId}/bank-accounts/{bankAccountId}:
+    get:
+      operationId: Customer_getBankAccount
+      parameters:
+      - description: The Id of the customer
+        explode: false
+        in: path
+        name: customerId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - description: The Id of the bank account
+        explode: false
+        in: path
+        name: bankAccountId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerGetBankAccountResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get customer bank account
+      tags:
+      - Customer
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--customers-customerId-bank-accounts-bankAccountId
+      x-accepts: application/json
+  /customers/{customerId}/bank-accounts/{bankAccountId}/default:
+    patch:
+      operationId: Customer_setBankAccountDefault
+      parameters:
+      - description: The Id of the customer
+        explode: false
+        in: path
+        name: customerId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - description: The Id of the bank account
+        explode: false
+        in: path
+        name: bankAccountId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerSetBankAccountDefaultResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Set customer bank account as default
+      tags:
+      - Customer
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-patch--customers-customerId-bank-accounts-bankAccountId-default
+      x-accepts: application/json
+  /invoices/{invoiceId}:
+    get:
+      operationId: Invoice_getById
+      parameters:
+      - description: The unique invoice Id
+        explode: false
+        in: path
+        name: invoiceId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get_invoice_200_response'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get invoice
+      tags:
+      - Invoice
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--invoices-invoiceId
+      x-accepts: application/json
+    put:
+      operationId: Invoice_updateDetails
+      parameters:
+      - description: The unique invoice Id
+        explode: false
+        in: path
+        name: invoiceId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/update_invoice_request'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get_invoice_200_response'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Update invoice
+      tags:
+      - Invoice
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-put--invoices-invoiceId
+      x-content-type: application/json
+      x-accepts: application/json
+  /helcim-pay/initialize:
+    post:
+      operationId: HelcimPay_createCheckoutSession
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HelcimPayInitializeRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/checkout_init_200_response'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/checkout_init_default_response'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Creates a HelcimPay.js Checkout Session
+      tags:
+      - Helcim Pay
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--helcim-pay-initialize
+      x-content-type: application/json
+      x-accepts: application/json
+  /card-batches:
+    get:
+      operationId: CardBatch_getAll
+      parameters:
+      - description: "The number of the batch to retrieve. Note that this is the batch\
+          \ number, not batch ID."
+        example: 18900
+        explode: true
+        in: query
+        name: batchNumber
+        required: false
+        schema:
+          type: number
+        style: form
+        x-konfig-original-example: 18900
+      - description: The terminalId of the requested batch
+        example: 180000
+        explode: true
+        in: query
+        name: terminalId
+        required: false
+        schema:
+          type: number
+        style: form
+        x-konfig-original-example: 180000
+      - description: Includes transaction statistics for the batch
+        example: true
+        explode: true
+        in: query
+        name: collect-stats
+        required: false
+        schema:
+          enum:
+          - "true"
+          - "false"
+          type: string
+        style: form
+        x-konfig-original-example: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardBatchGetAllResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get Card Batches
+      tags:
+      - Card Batch
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--card-batches
+      x-accepts: application/json
+  /card-transactions:
+    get:
+      operationId: CardTransaction_collectTransactions
+      parameters:
+      - description: Filters transactions created from 2020-01-01 (Mountain Time)
+        example: 2020-01-01
+        explode: true
+        in: query
+        name: dateFrom
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: 2020-01-01
+      - description: Filters transactions created until 2021-01-01 (Mountain Time)
+        example: 2021-01-01
+        explode: true
+        in: query
+        name: dateTo
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: 2021-01-01
+      - description: "Searches amount, card number(F4L4 only), cardholder name, &\
+          \ approval codes"
+        example: 500
+        explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: 500
+      - description: The code of the customer associated with the transaction
+        example: CST1000
+        explode: true
+        in: query
+        name: customerCode
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: CST1000
+      - description: The number of the invoice associated with the transaction
+        example: INV1000
+        explode: true
+        in: query
+        name: invoiceNumber
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: INV1000
+      - description: The token of the card associated with the transaction
+        example: 5454JK97UU1F5454
+        explode: true
+        in: query
+        name: cardToken
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: 5454JK97UU1F5454
+      - description: The id of the batch associated with the transaction
+        example: 3
+        explode: true
+        in: query
+        name: cardBatchId
+        required: false
+        schema:
+          type: integer
+        style: form
+        x-konfig-original-example: 3
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionCollectTransactionsResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Collects up to 1000 Card Transactions
+      tags:
+      - Card Transaction
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--card-transactions
+      x-accepts: application/json
+  /customers:
+    get:
+      operationId: Customer_list
+      parameters:
+      - description: "The search term to be used for partial matching on contactName,\
+          \ businessName, customerCode, city, phone and email (Only use one query\
+          \ field per request)."
+        example: john
+        explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: john
+      - description: Existing customer code (Only use one query field per request).
+        example: CST1000
+        explode: true
+        in: query
+        name: customerCode
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: CST1000
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerListResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get customers
+      tags:
+      - Customer
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--customers
+      x-accepts: application/json
+    post:
+      operationId: Customer_createNewCustomer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Create customer
+      tags:
+      - Customer
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--customers
+      x-content-type: application/json
+      x-accepts: application/json
+  /invoices:
+    get:
+      operationId: Invoice_list
+      parameters:
+      - description: The number of the invoice associated with the transaction
+        example: INV1000
+        explode: true
+        in: query
+        name: invoiceNumber
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: INV1000
+      - description: Filters transactions created from 2020-01-01 (Mountain Time)
+        example: 2020-01-01
+        explode: true
+        in: query
+        name: dateStart
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: 2020-01-01
+      - description: Filters transactions created until 2021-01-01 (Mountain Time)
+        example: 2021-01-01
+        explode: true
+        in: query
+        name: dateEnd
+        required: false
+        schema:
+          type: string
+        style: form
+        x-konfig-original-example: 2021-01-01
+      - description: Include convenience fee of each invoice 0 | 1
+        example: 1
+        explode: true
+        in: query
+        name: withConvenienceFee
+        required: false
+        schema:
+          type: integer
+        style: form
+        x-konfig-original-example: 1
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceListResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get invoices
+      tags:
+      - Invoice
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--invoices
+      x-accepts: application/json
+    post:
+      operationId: Invoice_createNew
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_invoice_request'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/create_invoice_200_response'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Create invoice
+      tags:
+      - Invoice
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--invoices
+      x-content-type: application/json
+      x-accepts: application/json
+  /card-terminals:
+    get:
+      operationId: CardTerminal_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/card_terminals_request'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTerminalGetAllResponse'
+          description: Successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedPaymentResponse'
+          description: Failed
+      security:
+      - ApiAccessAuth: []
+      summary: Get card terminals
+      tags:
+      - Card Terminal
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--card-terminals
+      x-content-type: application/json
+      x-accepts: application/json
+components:
+  schemas:
+    PaymentRequest:
+      properties:
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-ecommerce
+        terminalId:
+          description: For card transactions only. Id of the terminal you would want
+            to use. Default terminal for of the currency will be used if you dont
+            send this.
+          example: 3215
+          type: integer
+          x-konfig-original-example: 3215
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-terminalId
+        currency:
+          description: "The currency abbreviation of the invoice, such as CAD or USD.\
+            \ This should match currency of existing invoice."
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-currency
+        amount:
+          description: Amount to be processed
+          example: 100.99
+          type: number
+          x-konfig-original-example: 100.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-amount
+        customerCode:
+          description: Existing customer code associated with the transaction
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-customerCode
+        invoiceNumber:
+          description: To be filled when associating transaction to existing invoice.
+            Invoice should be associated to the same customer linked to the card
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-invoiceNumber
+        invoice:
+          $ref: '#/components/schemas/PaymentRequest_invoice'
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+      required:
+      - amount
+      - cardData
+      - currency
+      - ipAddress
+      title: PaymenRequest
+      type: object
+    CardData:
+      properties:
+        cardData: {}
+      required:
+      - cardData
+      title: CardData
+      type: object
+    SuccessfulPaymentResponse:
+      example:
+        amount: 11.99
+        approvalCode: HCMAPPRV
+        cardBatchId: 11
+        cvvResponse: "Y"
+        cardHolderName: John Smith
+        customerCode: CST1010
+        type: purchase
+        transactionId: 10
+        avsResponse: M
+        cardToken: 5454HCMXTEST5454
+        dateCreated: 2020-01-01 00:00:00
+        invoiceNumber: INV2022
+        warning: Failed to link customer to invoice
+        currency: CAD
+        user: Helcim System
+        cardNumber: "5454545454"
+        status: APPROVED
+      properties:
+        transactionId:
+          description: The transaction id
+          example: 10
+          type: number
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-transactionId
+        cardBatchId:
+          description: The id of associated card batch
+          example: 11
+          type: number
+          x-konfig-original-example: 11
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-cardBatchId
+        dateCreated:
+          description: The date(Mountain Time) when the transaction is created.
+          example: 2020-01-01 00:00:00
+          type: string
+          x-konfig-original-example: 2020-01-01 00:00:00
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-dateCreated
+        status:
+          description: The status of the transaction. possible values are APPROVED
+            | DECLINED
+          example: APPROVED
+          type: string
+          x-konfig-original-example: APPROVED
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-status
+        user:
+          description: Full name of the user who processed the transaction. Default
+            value is Helcim System
+          example: Helcim System
+          type: string
+          x-konfig-original-example: Helcim System
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-user
+        type:
+          description: The type of the transaction. possible values are purchase |
+            preauth | verify
+          example: purchase
+          type: string
+          x-konfig-original-example: purchase
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-type
+        amount:
+          description: The amount of processed transaction
+          example: 11.99
+          type: number
+          x-konfig-original-example: 11.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-amount
+        currency:
+          description: The abbreviation of the transaction's currency
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-currency
+        avsResponse:
+          description: AVS Response
+          example: M
+          type: string
+          x-konfig-original-example: M
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-avsResponse
+        cvvResponse:
+          description: CVV Response
+          example: "Y"
+          type: string
+          x-konfig-original-example: "Y"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-cvvResponse
+        approvalCode:
+          description: Approval Code
+          example: HCMAPPRV
+          type: string
+          x-konfig-original-example: HCMAPPRV
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-approvalCode
+        cardToken:
+          description: Card token associated to the transaction
+          example: 5454HCMXTEST5454
+          type: string
+          x-konfig-original-example: 5454HCMXTEST5454
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-cardToken
+        cardNumber:
+          description: First-6 Last-4 numbers of the card number associated to the
+            transaction
+          example: "5454545454"
+          type: string
+          x-konfig-original-example: "5454545454"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-cardNumber
+        cardHolderName:
+          description: Cardholdername associated to the transaction
+          example: John Smith
+          type: string
+          x-konfig-original-example: John Smith
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-cardHolderName
+        customerCode:
+          description: Customer code associated to the transaction
+          example: CST1010
+          type: string
+          x-konfig-original-example: CST1010
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-customerCode
+        invoiceNumber:
+          description: Invoice number associated to the transaction
+          example: INV2022
+          type: string
+          x-konfig-original-example: INV2022
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-invoiceNumber
+        warning:
+          description: Warnings
+          example: Failed to link customer to invoice
+          type: string
+          x-konfig-original-example: Failed to link customer to invoice
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-warning
+      title: Payment Response
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    FailedPaymentResponse:
+      properties:
+        errors:
+          description: List of errors
+          items:
+            example: An error occured
+            type: string
+            x-konfig-original-example: An error occured
+            x-konfig-generated-schema: konfig-generated-schema-components-schemas-FailedPaymentResponse-properties-errors-items
+          type: array
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    CaptureRequest:
+      example:
+        amount: 100.99
+        ecommerce: true
+        ipAddress: 192.168.1.1
+        preAuthTransactionId: 198763
+      properties:
+        preAuthTransactionId:
+          description: The transaction ID of the original pre-authorization transaction.
+          example: 198763
+          type: integer
+          x-konfig-original-example: 198763
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CaptureRequest-properties-preAuthTransactionId
+        amount:
+          description: The amount to capture. Must be less or equal to the original
+            pre-authorization amount.
+          example: 100.99
+          type: number
+          x-konfig-original-example: 100.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CaptureRequest-properties-amount
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CaptureRequest-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CaptureRequest-properties-ecommerce
+      required:
+      - amount
+      - ipAddress
+      - preAuthTransactionId
+      title: Capture Request
+      type: object
+    VerifyRequest:
+      example:
+        cardData:
+          cardCVV: "100"
+          cardExpiry: "1257"
+          cardNumber: "5454545454545454"
+        ecommerce: true
+        ipAddress: 192.168.1.1
+        invoiceNumber: ""
+        customerCode: ""
+        currency: CAD
+        invoice: null
+        billingAddress:
+          country: CAN
+          province: AB
+          city: Calgary
+          phone: "4031231234"
+          postalCode: H0H0H0
+          name: John Smith / Helcim
+          street1: Jump Street 21
+          street2: street2
+          email: john@example.com
+      properties:
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-VerifyRequest-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-VerifyRequest-properties-ecommerce
+        currency:
+          description: The currency abbreviation of the transaction.
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-VerifyRequest-properties-currency
+        customerCode:
+          description: Existing customer code associated with the transaction
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-VerifyRequest-properties-customerCode
+        invoiceNumber:
+          description: To be filled when associating transaction to existing invoice.
+            Invoice should be associated to the same customer linked to the card
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-VerifyRequest-properties-invoiceNumber
+        invoice:
+          $ref: '#/components/schemas/VerifyRequest_invoice'
+        cardData:
+          $ref: '#/components/schemas/Card'
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+      required:
+      - amount
+      - billingAddress
+      - cardData
+      - currency
+      - ipAddress
+      title: Verify Request
+      type: object
+    BankData:
+      properties:
+        bankData: {}
+      required:
+      - bankData
+      title: BankData
+      type: object
+    SuccessfulAchTransactionResponse:
+      example:
+        bankToken: -A1B2C3D4E5F6G7*
+        statusClearing: OPENED
+        amount: 11.99
+        approvalCode: HCMAPPRV
+        dateCreated: 2020-01-01 00:00:00
+        statusAuth: APPROVED
+        invoiceNumber: INV2022
+        currency: CAD
+        bankAccountNumber: A1B2C3D4E5F6G7
+        batchId: 11
+        type: WITHDRAWAL
+        transactionId: 10
+      properties:
+        transactionId:
+          description: The transaction id
+          example: 10
+          type: number
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-transactionId
+        batchId:
+          description: The id of associated card batch
+          example: 11
+          type: number
+          x-konfig-original-example: 11
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-batchId
+        dateCreated:
+          description: The date(Mountain Time) when the transaction is created.
+          example: 2020-01-01 00:00:00
+          type: string
+          x-konfig-original-example: 2020-01-01 00:00:00
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-dateCreated
+        statusAuth:
+          description: The status of the transaction. possible values are APPROVED
+            | DECLINED | IN_PROGRESS | CANCELLED | PENDING
+          example: APPROVED
+          type: string
+          x-konfig-original-example: APPROVED
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-statusAuth
+        statusClearing:
+          description: The status of the transaction. possible values are OPENED |
+            CLEARED | REJECTED | CONTESTED | RETURNED
+          example: OPENED
+          type: string
+          x-konfig-original-example: OPENED
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-statusClearing
+        type:
+          description: The type of the transaction. possible values are WITHDRAWAL
+            | DEPOSIT | SETTLE | REVERSE | REFUND
+          example: WITHDRAWAL
+          type: string
+          x-konfig-original-example: WITHDRAWAL
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-type
+        amount:
+          description: The amount of processed transaction
+          example: 11.99
+          type: number
+          x-konfig-original-example: 11.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-amount
+        currency:
+          description: The abbreviation of the transaction's currency
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-currency
+        approvalCode:
+          description: Approval Code
+          example: HCMAPPRV
+          type: string
+          x-konfig-original-example: HCMAPPRV
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-approvalCode
+        bankAccountNumber:
+          description: Bank account number
+          example: A1B2C3D4E5F6G7
+          type: string
+          x-konfig-original-example: A1B2C3D4E5F6G7
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-bankAccountNumber
+        bankToken:
+          description: Bank Token associated with bankAccount
+          example: -A1B2C3D4E5F6G7*
+          type: string
+          x-konfig-original-example: -A1B2C3D4E5F6G7*
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-bankToken
+        invoiceNumber:
+          description: Invoice number associated to the transaction
+          example: INV2022
+          type: string
+          x-konfig-original-example: INV2022
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-invoiceNumber
+      title: Ach Transaction Response
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    CardBatch:
+      example:
+        netSales: 90
+        totalReversed: 5
+        totalSales: 100
+        terminalId: 1411
+        dateClosed: 2022-11-30 14:14:53
+        countApproved: 8
+        dateUpdated: 2022-11-30 13:14:53
+        dateCreated: 2022-11-30 13:14:53
+        totalRefundsReversed: 3.5
+        closed: true
+        countTotal: 8
+        id: 2488717
+        countDeclined: 0
+        totalRefunds: 8.5
+        batchNumber: 6
+      properties:
+        id:
+          description: Id of Card batch
+          example: 2488717
+          type: integer
+          x-konfig-original-example: 2488717
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-id
+        dateCreated:
+          description: Date Card batch is Created
+          example: 2022-11-30 13:14:53
+          type: string
+          x-konfig-original-example: 2022-11-30 13:14:53
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-dateCreated
+        dateUpdated:
+          description: Date Card batch is last updated
+          example: 2022-11-30 13:14:53
+          type: string
+          x-konfig-original-example: 2022-11-30 13:14:53
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-dateUpdated
+        dateClosed:
+          description: Date Card Batch is closed
+          example: 2022-11-30 14:14:53
+          type: string
+          x-konfig-original-example: 2022-11-30 14:14:53
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-dateClosed
+        closed:
+          description: True if the batch is closed. Else false
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-closed
+        terminalId:
+          description: Id of associated Terminal
+          example: 1411
+          type: integer
+          x-konfig-original-example: 1411
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-terminalId
+        batchNumber:
+          description: Batch Number
+          example: 6
+          type: integer
+          x-konfig-original-example: 6
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-batchNumber
+        netSales:
+          description: Approved sales net refunds and voids
+          example: 90
+          type: number
+          x-konfig-original-example: 90
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-netSales
+        totalSales:
+          description: Gross sales
+          example: 100
+          type: number
+          x-konfig-original-example: 100
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-totalSales
+        totalRefunds:
+          description: Gross refunds
+          example: 8.5
+          type: number
+          x-konfig-original-example: 8.5
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-totalRefunds
+        totalReversed:
+          description: Voided amount
+          example: 5
+          type: number
+          x-konfig-original-example: 5
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-totalReversed
+        totalRefundsReversed:
+          description: Amount of voided refunds
+          example: 3.5
+          type: number
+          x-konfig-original-example: 3.5
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-totalRefundsReversed
+        countTotal:
+          description: Total number of transactions
+          example: 8
+          type: number
+          x-konfig-original-example: 8
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-countTotal
+        countApproved:
+          description: Number of approved transactions
+          example: 8
+          type: number
+          x-konfig-original-example: 8
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-countApproved
+        countDeclined:
+          description: Number of declined transactions
+          example: 0
+          type: number
+          x-konfig-original-example: 0
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardBatch-properties-countDeclined
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    Customer:
+      example:
+        cards:
+        - cardF6L4: "5454545454"
+          cardHolderName: John Smith
+          cardToken: a1b2c3d4e5f6
+        - cardF6L4: "5454545454"
+          cardHolderName: John Smith
+          cardToken: a1b2c3d4e5f6
+        contactName: John Smith
+        businessName: Best company
+        customerCode: CST1200
+        shippingAddress:
+          country: CAN
+          province: AB
+          city: Calgary
+          phone: "4031231234"
+          postalCode: H0H0H0
+          name: John Smith / Helcim
+          street1: Jump Street 21
+          street2: street2
+          email: john@example.com
+        id: 2488717
+        billingAddress:
+          country: CAN
+          province: AB
+          city: Calgary
+          phone: "4031231234"
+          postalCode: H0H0H0
+          name: John Smith / Helcim
+          street1: Jump Street 21
+          street2: street2
+          email: john@example.com
+        cellPhone: 908-295-4902
+      properties:
+        id:
+          description: Id of Customer
+          example: 2488717
+          type: integer
+          x-konfig-original-example: 2488717
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Customer-properties-id
+        customerCode:
+          description: Customer code of the customer
+          example: CST1200
+          type: string
+          x-konfig-original-example: CST1200
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Customer-properties-customerCode
+        businessName:
+          description: Name of the business
+          example: Best company
+          type: string
+          x-konfig-original-example: Best company
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Customer-properties-businessName
+        contactName:
+          description: Contact Name
+          example: John Smith
+          type: string
+          x-konfig-original-example: John Smith
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Customer-properties-contactName
+        cellPhone:
+          description: Cell phone number of customer
+          example: 908-295-4902
+          type: string
+          x-konfig-original-example: 908-295-4902
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Customer-properties-cellPhone
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+        cards:
+          description: Array of cards stored in the vault associated with this customer.
+          items:
+            $ref: '#/components/schemas/Card_1'
+          type: array
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    CustomerRequest:
+      example:
+        contactName: John Smith
+        businessName: Best Company
+        customerCode: CST1000
+        shippingAddress:
+          country: CAN
+          province: AB
+          city: Calgary
+          phone: "4031231234"
+          postalCode: H0H0H0
+          name: John Smith / Helcim
+          street1: Jump Street 21
+          street2: street2
+          email: john@example.com
+        billingAddress:
+          country: CAN
+          province: AB
+          city: Calgary
+          phone: "4031231234"
+          postalCode: H0H0H0
+          name: John Smith / Helcim
+          street1: Jump Street 21
+          street2: street2
+          email: john@example.com
+        cellPhone: 908-295-4902
+      properties:
+        customerCode:
+          description: "The unique customer code. If blank, it will be automatically\
+            \ generated."
+          example: CST1000
+          type: string
+          x-konfig-original-example: CST1000
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerRequest-properties-customerCode
+        contactName:
+          description: The primary contact name (full name) of the customer.
+          example: John Smith
+          type: string
+          x-konfig-original-example: John Smith
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerRequest-properties-contactName
+        businessName:
+          description: The business name of the customer. There must be either a contact
+            name or business name present.
+          example: Best Company
+          type: string
+          x-konfig-original-example: Best Company
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerRequest-properties-businessName
+        cellPhone:
+          description: The cell phone number of the customer.
+          example: 908-295-4902
+          type: string
+          x-konfig-original-example: 908-295-4902
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerRequest-properties-cellPhone
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+      title: Customer Request
+      type: object
+    CustomerUpdateRequest:
+      example:
+        contactName: John Smith
+        businessName: Best Company
+        customerCode: CST1000
+        shippingAddress:
+          country: CAN
+          province: AB
+          city: Calgary
+          phone: "4031231234"
+          postalCode: H0H0H0
+          name: John Smith / Helcim
+          street1: Jump Street 21
+          street2: street2
+          email: john@example.com
+        billingAddress:
+          country: CAN
+          province: AB
+          city: Calgary
+          phone: "4031231234"
+          postalCode: H0H0H0
+          name: John Smith / Helcim
+          street1: Jump Street 21
+          street2: street2
+          email: john@example.com
+        cellPhone: 908-295-4902
+      properties:
+        customerCode:
+          description: The unique customer code.
+          example: CST1000
+          type: string
+          x-konfig-original-example: CST1000
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-customerCode
+        contactName:
+          description: The primary contact name (full name) of the customer.
+          example: John Smith
+          type: string
+          x-konfig-original-example: John Smith
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-contactName
+        businessName:
+          description: The business name of the customer. There must be either a contact
+            name or business name present.
+          example: Best Company
+          type: string
+          x-konfig-original-example: Best Company
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-businessName
+        cellPhone:
+          description: The cell phone number of the customer.
+          example: 908-295-4902
+          type: string
+          x-konfig-original-example: 908-295-4902
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-cellPhone
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+      title: Customer Update Request
+      type: object
+    CardResponse:
+      example:
+        cardCVV: "100"
+        dateCreated: 2025-01-30 13:35:36
+        cardF6L4: "5454545454"
+        cardExpiry: "1257"
+        cardHolderName: John Smith
+        id: 161462
+        cardToken: 907af81acc0224e0134949
+        dateUpdated: 2025-01-30 13:35:36
+      properties:
+        id:
+          description: The id of the card.
+          example: 161462
+          type: integer
+          x-konfig-original-example: 161462
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardResponse-properties-id
+        cardToken:
+          description: The card token.
+          example: 907af81acc0224e0134949
+          type: string
+          x-konfig-original-example: 907af81acc0224e0134949
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardResponse-properties-cardToken
+        dateCreated:
+          description: The date when the card is created.
+          example: 2025-01-30 13:35:36
+          type: string
+          x-konfig-original-example: 2025-01-30 13:35:36
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardResponse-properties-dateCreated
+        dateUpdated:
+          description: The date when the card last got updated.
+          example: 2025-01-30 13:35:36
+          type: string
+          x-konfig-original-example: 2025-01-30 13:35:36
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardResponse-properties-dateUpdated
+        cardHolderName:
+          description: The cardholder name.
+          example: John Smith
+          type: string
+          x-konfig-original-example: John Smith
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardResponse-properties-cardHolderName
+        cardF6L4:
+          description: The first-six and last-four card numbers.
+          example: "5454545454"
+          type: string
+          x-konfig-original-example: "5454545454"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardResponse-properties-cardF6L4
+        cardExpiry:
+          description: "The card expiry date, in MMYY format (total of 4 digits without\
+            \ spaces or slashes)."
+          example: "1257"
+          type: string
+          x-konfig-original-example: "1257"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardResponse-properties-cardExpiry
+        cardCVV:
+          description: The card CVV (3-4 digits on back of credit card).
+          example: "100"
+          type: string
+          x-konfig-original-example: "100"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardResponse-properties-cardCVV
+      title: Card
+      type: object
+    BankAccountResponse:
+      example:
+        bankAccountNumberL4: "9999"
+        bankToken: JHKJHKLKJLOHKJ876545KJBK
+        address:
+          country: CAN
+          province: AB
+          city: Calgary
+          phone: "4031231234"
+          postalCode: H0H0H0
+          name: John Smith / Helcim
+          street1: Jump Street 21
+          street2: street2
+          email: john@example.com
+        transitNumber: "55555"
+        accountType: CHECKING
+        verified: "1"
+        accountCorporate: PERSONAL
+        dateUpdated: 2025-01-30 13:35:36
+        dateLastUsed: 2025-01-30 13:35:36
+        routingNumber: "999999999"
+        dateCreated: 2025-01-30 13:35:36
+        bankIdNumber: "333"
+        ready: "1"
+        customerId: 2222
+        id: 12312
+        dateVerified: 2025-01-30 13:35:36
+      properties:
+        id:
+          description: The id of the bank account.
+          example: 12312
+          type: integer
+          x-konfig-original-example: 12312
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-id
+        customerId:
+          description: The id of the customer owning the bank account.
+          example: 2222
+          type: integer
+          x-konfig-original-example: 2222
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-customerId
+        dateCreated:
+          description: The date when the bank account is created.
+          example: 2025-01-30 13:35:36
+          type: string
+          x-konfig-original-example: 2025-01-30 13:35:36
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-dateCreated
+        dateUpdated:
+          description: The date when the bank account last got updated.
+          example: 2025-01-30 13:35:36
+          type: string
+          x-konfig-original-example: 2025-01-30 13:35:36
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-dateUpdated
+        dateLastUsed:
+          description: The date when the bank account last got used.
+          example: 2025-01-30 13:35:36
+          type: string
+          x-konfig-original-example: 2025-01-30 13:35:36
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-dateLastUsed
+        dateVerified:
+          description: The date when the bank account is verified.
+          example: 2025-01-30 13:35:36
+          type: string
+          x-konfig-original-example: 2025-01-30 13:35:36
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-dateVerified
+        bankToken:
+          description: The token of the bank account.
+          example: JHKJHKLKJLOHKJ876545KJBK
+          type: string
+          x-konfig-original-example: JHKJHKLKJLOHKJ876545KJBK
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-bankToken
+        accountType:
+          description: "The type of the bank account, such as CHECKING | SAVINGS."
+          example: CHECKING
+          type: string
+          x-konfig-original-example: CHECKING
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-accountType
+        accountCorporate:
+          description: "The corporate type of the bank account, such as PERSONAL |\
+            \ CORPORATE."
+          example: PERSONAL
+          type: string
+          x-konfig-original-example: PERSONAL
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-accountCorporate
+        verified:
+          description: "Verified status of the bank account, 1|0."
+          example: "1"
+          type: string
+          x-konfig-original-example: "1"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-verified
+        ready:
+          description: "Ready status of the bank account, 1|0."
+          example: "1"
+          type: string
+          x-konfig-original-example: "1"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-ready
+        bankIdNumber:
+          description: The institution number of Canadian Bank Account that identifies
+            the bank.
+          example: "333"
+          type: string
+          x-konfig-original-example: "333"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-bankIdNumber
+        transitNumber:
+          description: The transit number of Canadian Bank Account. Shows which branch
+            you opened your account at.
+          example: "55555"
+          type: string
+          x-konfig-original-example: "55555"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-transitNumber
+        routingNumber:
+          description: The routing number of US Bank Account. Identifies the financial
+            institution on which it was drawn.
+          example: "999999999"
+          type: string
+          x-konfig-original-example: "999999999"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-routingNumber
+        bankAccountNumberL4:
+          description: Last 4 digits of the bank account number.
+          example: "9999"
+          type: string
+          x-konfig-original-example: "9999"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccountResponse-properties-bankAccountNumberL4
+        address:
+          $ref: '#/components/schemas/Address'
+      title: BankAccount
+      type: object
+    InvoiceResponseBase:
+      properties:
+        invoiceId:
+          description: Unique Invoice Id
+          example: 12321
+          type: number
+          x-konfig-original-example: 12321
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceResponseBase-properties-invoiceId
+        invoiceNumber:
+          description: Invoice number of invoice to be created. Will be generated
+            if blank
+          example: INV1000
+          type: string
+          x-konfig-original-example: INV1000
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceResponseBase-properties-invoiceNumber
+        tipAmount:
+          description: Tip amount
+          example: 0.99
+          type: number
+          x-konfig-original-example: 0.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceResponseBase-properties-tipAmount
+        depositAmount:
+          description: Deposit amount
+          example: 1
+          type: number
+          x-konfig-original-example: 1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceResponseBase-properties-depositAmount
+        notes:
+          description: "Comment to appear at the bottom of the invoice, visible to\
+            \ the customer."
+          example: No vegetables please
+          type: string
+          x-konfig-original-example: No vegetables please
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceResponseBase-properties-notes
+      title: Invoice Base
+      type: object
+    Invoice:
+      properties:
+        dateCreated:
+          description: Date the invoice is created.
+          example: 2020-01-01 00:30:50
+          type: string
+          x-konfig-original-example: 2020-01-01 00:30:50
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Invoice-properties-dateCreated
+        dateUpdated:
+          description: Date the invoice is updated.
+          example: 2020-01-01 20:30:50
+          type: string
+          x-konfig-original-example: 2020-01-01 20:30:50
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Invoice-properties-dateUpdated
+        datePaid:
+          description: Date the invoice is paid.
+          example: 2020-01-01 00:30:50
+          type: string
+          x-konfig-original-example: 2020-01-01 00:30:50
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Invoice-properties-datePaid
+        dateIssued:
+          description: Date the invoice is paid.
+          example: 2020-01-01 00:30:50
+          type: string
+          x-konfig-original-example: 2020-01-01 00:30:50
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Invoice-properties-dateIssued
+        status:
+          description: "The status of the invoice, such as due | paid | completed\
+            \ | refunded."
+          example: due
+          type: string
+          x-konfig-original-example: due
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Invoice-properties-status
+        customerId:
+          description: The id of customer associated to the invoice.
+          example: 234
+          type: integer
+          x-konfig-original-example: 234
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Invoice-properties-customerId
+        amount:
+          description: The total amount of the invoice.
+          example: 100.99
+          type: number
+          x-konfig-original-example: 100.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Invoice-properties-amount
+        convenienceFee:
+          description: The total convenience fee paid for the invoice.
+          example: 100
+          type: number
+          x-konfig-original-example: 100
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Invoice-properties-convenienceFee
+      title: Invoice
+      type: object
+    InvoiceBase:
+      properties:
+        invoiceNumber:
+          description: Invoice number of invoice to be created. Will be generated
+            if blank
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-invoiceNumber
+        tipAmount:
+          description: Tip amount
+          example: 0.99
+          type: number
+          x-konfig-original-example: 0.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-tipAmount
+        depositAmount:
+          description: Deposit amount
+          example: 1
+          type: number
+          x-konfig-original-example: 1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-depositAmount
+        notes:
+          description: "Comment to appear at the bottom of the invoice, visible to\
+            \ the customer."
+          example: No vegetables please
+          type: string
+          x-konfig-original-example: No vegetables please
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-notes
+      title: Invoice Base
+      type: object
+    InvoiceCreate:
+      properties:
+        customerId:
+          description: Unique customer Id.
+          example: 123123
+          type: integer
+          x-konfig-original-example: 123123
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceCreate-properties-customerId
+        currency:
+          description: "The currency abbreviation of the invoice, such as CAD or USD.\
+            \ This should match currency of existing invoice."
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceCreate-properties-currency
+        type:
+          description: "The type of the invoice, such as ESTIMATE | INVOICE | QUOTE\
+            \ | ORDER | PURCHASE_ORDER | STATEMENT | REGISTRATION | CREDIT."
+          example: INVOICE
+          type: string
+          x-konfig-original-example: INVOICE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceCreate-properties-type
+        status:
+          description: "The status of invoice, such as DUE | SHIPPED | COMPLETED |\
+            \ CANCELLED"
+          example: DUE
+          type: string
+          x-konfig-original-example: DUE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceCreate-properties-status
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+      title: Invoice Create
+      type: object
+    InvoiceCreateAfterProcessing:
+      properties:
+        shipping:
+          $ref: '#/components/schemas/Shipping'
+        pickup:
+          $ref: '#/components/schemas/Pickup'
+        tax:
+          $ref: '#/components/schemas/Tax'
+        discount:
+          $ref: '#/components/schemas/Discount'
+        lineItems:
+          items:
+            $ref: '#/components/schemas/LineItem'
+          maxLength: 10
+          type: array
+      title: Invoice Create after transaction processing
+      type: object
+    InvoiceUpdate:
+      properties:
+        currency:
+          description: "The currency abbreviation of the invoice, such as CAD or USD.\
+            \ This should match currency of existing invoice."
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceUpdate-properties-currency
+        type:
+          description: "The type of the invoice, such as ESTIMATE | INVOICE | QUOTE\
+            \ | ORDER | PURCHASE_ORDER | STATEMENT | REGISTRATION | CREDIT."
+          example: INVOICE
+          type: string
+          x-konfig-original-example: INVOICE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceUpdate-properties-type
+        status:
+          description: "The status of invoice, such as DUE | SHIPPED | COMPLETED |\
+            \ CANCELLED"
+          example: DUE
+          type: string
+          x-konfig-original-example: DUE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceUpdate-properties-status
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+      title: Invoice Create
+      type: object
+    CardTerminal:
+      example:
+        address:
+          country: CAN
+          province: AB
+          city: Calgary
+          postalCode: H0H0H0
+          street1: Street 1
+          street2: Street 2
+        nickname: Terminal 1
+        currency: CAD
+        id: 123
+        status: ACTIVE
+      properties:
+        id:
+          description: Id of the terminal.
+          example: 123
+          type: integer
+          x-konfig-original-example: 123
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardTerminal-properties-id
+        nickname:
+          description: Nickname of terminal
+          example: Terminal 1
+          type: string
+          x-konfig-original-example: Terminal 1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardTerminal-properties-nickname
+        currency:
+          description: Currency of terminal. possible values are CAD | USD
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardTerminal-properties-currency
+        status:
+          description: Status of Terminal. possible values are ACTIVE | INACTIVE
+          example: ACTIVE
+          type: string
+          x-konfig-original-example: ACTIVE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardTerminal-properties-status
+        address:
+          $ref: '#/components/schemas/CardTerminal_address'
+      title: Terminal
+      type: object
+    Address:
+      example:
+        country: CAN
+        province: AB
+        city: Calgary
+        phone: "4031231234"
+        postalCode: H0H0H0
+        name: John Smith / Helcim
+        street1: Jump Street 21
+        street2: street2
+        email: john@example.com
+      properties:
+        name:
+          description: Contact Name or Business Name
+          example: John Smith / Helcim
+          type: string
+          x-konfig-original-example: John Smith / Helcim
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Address-properties-name
+        street1:
+          example: Jump Street 21
+          type: string
+          x-konfig-original-example: Jump Street 21
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Address-properties-street1
+        street2:
+          type: string
+        city:
+          example: Calgary
+          type: string
+          x-konfig-original-example: Calgary
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Address-properties-city
+        province:
+          description: "2 letter abbreviation of the province(AB, BC, CA). Required\
+            \ field if country is CAN or USA."
+          example: AB
+          type: string
+          x-konfig-original-example: AB
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Address-properties-province
+        country:
+          description: "3-letter abbreviation of the country(CAN, USA)"
+          example: CAN
+          type: string
+          x-konfig-original-example: CAN
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Address-properties-country
+        postalCode:
+          example: H0H0H0
+          type: string
+          x-konfig-original-example: H0H0H0
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Address-properties-postalCode
+        phone:
+          description: 10 to 15 digits phone number.
+          example: "4031231234"
+          type: string
+          x-konfig-original-example: "4031231234"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Address-properties-phone
+        email:
+          example: john@example.com
+          type: string
+          x-konfig-original-example: john@example.com
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Address-properties-email
+      required:
+      - name
+      - postalCode
+      - street1
+      title: Address
+      type: object
+    Card:
+      example:
+        cardCVV: "100"
+        cardExpiry: "1257"
+        cardNumber: "5454545454545454"
+      properties:
+        cardNumber:
+          description: "The full card number (13 to 16 digits) from merchant to process\
+            \ \"purchase\", \"pre-auth\", and \"verify\" transactions."
+          example: "5454545454545454"
+          type: string
+          x-konfig-original-example: "5454545454545454"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Card-properties-cardNumber
+        cardExpiry:
+          description: "The card expiry date, in MMYY format (total of 4 digits without\
+            \ spaces or slashes)."
+          example: "1257"
+          type: string
+          x-konfig-original-example: "1257"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Card-properties-cardExpiry
+        cardCVV:
+          description: The card CVV (3-4 digits on back of credit card).
+          example: "100"
+          type: string
+          x-konfig-original-example: "100"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Card-properties-cardCVV
+      required:
+      - cardCVV
+      - cardExpiry
+      - cardHolderName
+      - cardNumber
+      title: Card
+      type: object
+    CardToken:
+      properties:
+        cardToken:
+          description: "The token for the card on file. If Customer Code is filled,\
+            \ The card should must be owned by a passed customer code"
+          example: HGKHJK5647698HGJJK
+          type: string
+          x-konfig-original-example: HGKHJK5647698HGJJK
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardToken-properties-cardToken
+      required:
+      - cardToken
+      title: Card Token
+      type: object
+    BankAccount:
+      properties:
+        firstName:
+          description: The bank account holder first name
+          example: John
+          type: string
+          x-konfig-original-example: John
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-firstName
+        lastName:
+          description: The bank account holder last name
+          example: Smith
+          type: string
+          x-konfig-original-example: Smith
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-lastName
+        companyName:
+          description: The company name
+          example: Microsoft
+          type: string
+          x-konfig-original-example: Microsoft
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-companyName
+        bankAccountNumber:
+          description: Bank account number
+          example: "999999999"
+          type: string
+          x-konfig-original-example: "999999999"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-bankAccountNumber
+        accountType:
+          description: "CHECKING - Chequing, SAVINGS - Savings"
+          example: CHECKING
+          type: string
+          x-konfig-original-example: CHECKING
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-accountType
+        accountCorporate:
+          description: "PERSONAL - Personal Bank Account, CORPORATE - Corporate Bank\
+            \ Account"
+          example: PERSONAL
+          type: string
+          x-konfig-original-example: PERSONAL
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-accountCorporate
+        bankIdNumber:
+          description: "Required for Canadian Bank Account Holder, the institution\
+            \ number - three digits - identifies your bank."
+          example: "888"
+          type: string
+          x-konfig-original-example: "888"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-bankIdNumber
+        transitNumber:
+          description: "Required for Canadian Bank Account Holder, the transit number\
+            \ - five digits - shows which branch you opened your account at."
+          example: "55555"
+          type: string
+          x-konfig-original-example: "55555"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-transitNumber
+        routingNumber:
+          description: "Required for US Bank Account Holder, a nine-digit code printed\
+            \ on the bottom of checks to identify the financial institution on which\
+            \ it was drawn."
+          example: "123456789"
+          type: string
+          x-konfig-original-example: "123456789"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-routingNumber
+        streetAddress:
+          example: 440 - something
+          type: string
+          x-konfig-original-example: 440 - something
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-streetAddress
+        city:
+          example: Calgary
+          type: string
+          x-konfig-original-example: Calgary
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-city
+        country:
+          description: "Only allow CAN - Canada, USA - United States"
+          example: CAN
+          type: string
+          x-konfig-original-example: CAN
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-country
+        province:
+          example: AB
+          type: string
+          x-konfig-original-example: AB
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-province
+        postalCode:
+          example: T2T2T2
+          type: string
+          x-konfig-original-example: T2T2T2
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-postalCode
+        padAgreement:
+          description: Customer given permission for a company or financial institution
+            to debit a bank account when the payment is due.
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankAccount-properties-padAgreement
+      required:
+      - accountCorporate
+      - accountType
+      - bankAccountNumber
+      - city
+      - companyName
+      - country
+      - firstName
+      - lastName
+      - postalCode
+      - province
+      - streetAddress
+      title: BankAccount
+      type: object
+    BankToken:
+      properties:
+        bankToken:
+          description: The token for the bank account on file.
+          example: HGKHJK5647698HGJJK
+          type: string
+          x-konfig-original-example: HGKHJK5647698HGJJK
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-BankToken-properties-bankToken
+      required:
+      - bankToken
+      title: Bank Token
+      type: object
+    Shipping:
+      properties:
+        amount:
+          description: Total Shipping Amount of the Invoice
+          example: 10.99
+          type: number
+          x-konfig-original-example: 10.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Shipping-properties-amount
+        details:
+          description: This will show up in the invoice
+          example: Canada Post 1 day shipping
+          type: string
+          x-konfig-original-example: Canada Post 1 day shipping
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Shipping-properties-details
+        address:
+          $ref: '#/components/schemas/Address'
+      required:
+      - address
+      - amount
+      - details
+      title: Shipping Data
+      type: object
+    Pickup:
+      properties:
+        date:
+          description: Pickup Date
+          example: 2022-01-25 13:55:55
+          type: string
+          x-konfig-original-example: 2022-01-25 13:55:55
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Pickup-properties-date
+        name:
+          description: Name of the person to pickup
+          example: Jane Smith
+          type: string
+          x-konfig-original-example: Jane Smith
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Pickup-properties-name
+      required:
+      - date
+      title: Pickup Data
+      type: object
+    Tax:
+      properties:
+        amount:
+          description: Total Tax Amount of the Invoice
+          example: 5.99
+          type: number
+          x-konfig-original-example: 5.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Tax-properties-amount
+        details:
+          description: Tax Details
+          example: GST 5%
+          type: string
+          x-konfig-original-example: GST 5%
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Tax-properties-details
+      required:
+      - amount
+      - details
+      title: Tax Data
+      type: object
+    Discount:
+      properties:
+        amount:
+          description: Total Discount Amount of the Invoice
+          example: 10.99
+          type: number
+          x-konfig-original-example: 10.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Discount-properties-amount
+        details:
+          description: Discount Details/Code
+          example: DISC100
+          type: string
+          x-konfig-original-example: DISC100
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Discount-properties-details
+      required:
+      - amount
+      - details
+      title: Discount Data
+      type: object
+    LineItem:
+      properties:
+        description:
+          example: Red Hat
+          type: string
+          x-konfig-original-example: Red Hat
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-LineItem-properties-description
+        sku:
+          example: ITM1434
+          type: string
+          x-konfig-original-example: ITM1434
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-LineItem-properties-sku
+        quantity:
+          description: The quantity of the line item. Can have upto 2 decimal places
+          example: 10.5
+          type: number
+          x-konfig-original-example: 10.5
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-LineItem-properties-quantity
+        price:
+          example: 10.55
+          type: number
+          x-konfig-original-example: 10.55
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-LineItem-properties-price
+        total:
+          description: Total = Price * Quantity
+          example: 110.78
+          type: number
+          x-konfig-original-example: 110.78
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-LineItem-properties-total
+        taxAmount:
+          description: This will be added to Invoice's total tax amount
+          example: 0
+          type: number
+          x-konfig-original-example: 0
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-LineItem-properties-taxAmount
+        discountAmount:
+          description: This will be added to Invoice's total discount amount
+          example: 0
+          type: number
+          x-konfig-original-example: 0
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-LineItem-properties-discountAmount
+      required:
+      - description
+      - price
+      - quantity
+      - total
+      title: Line Item Data
+      type: object
+    purchase_request:
+      allOf:
+      - $ref: '#/components/schemas/PaymentRequest'
+      - $ref: '#/components/schemas/CardData'
+    Refund_Request:
+      properties:
+        originalTransactionId:
+          description: The transaction ID of the purchase/capture transaction.
+          example: 198763
+          type: integer
+          x-konfig-original-example: 198763
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request-properties-originalTransactionId
+        amount:
+          description: The amount to refund. Must be less or equal to the original
+            purchase/capture amount.
+          example: 100.99
+          type: number
+          x-konfig-original-example: 100.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request-properties-amount
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request-properties-ecommerce
+      required:
+      - amount
+      - ipAddress
+      - originalTransactionId
+      title: Refund Request
+      type: object
+    Refund_Request_1:
+      properties:
+        cardTransactionId:
+          description: The transaction ID of the original transaction.
+          example: 198763
+          type: integer
+          x-konfig-original-example: 198763
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request_1-properties-cardTransactionId
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request_1-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request_1-properties-ecommerce
+      required:
+      - cardTransactionId
+      - ipAddress
+      title: Refund Request
+      type: object
+    withdraw_request:
+      allOf:
+      - $ref: '#/components/schemas/PaymentRequest'
+      - $ref: '#/components/schemas/BankData'
+    get_invoices_200_response_inner:
+      allOf:
+      - $ref: '#/components/schemas/InvoiceResponseBase'
+      - $ref: '#/components/schemas/Invoice'
+    create_invoice_request:
+      allOf:
+      - $ref: '#/components/schemas/InvoiceBase'
+      - $ref: '#/components/schemas/InvoiceCreate'
+      - $ref: '#/components/schemas/InvoiceCreateAfterProcessing'
+    create_invoice_200_response:
+      allOf:
+      - type: object
+      - $ref: '#/components/schemas/InvoiceResponseBase'
+      - $ref: '#/components/schemas/InvoiceCreate'
+      - $ref: '#/components/schemas/InvoiceCreateAfterProcessing'
+      - $ref: '#/components/schemas/Invoice'
+      x-konfig-is-used-in-successful-response: true
+    get_invoice_200_response:
+      allOf:
+      - $ref: '#/components/schemas/InvoiceResponseBase'
+      - $ref: '#/components/schemas/InvoiceCreate'
+      - $ref: '#/components/schemas/InvoiceCreateAfterProcessing'
+      - $ref: '#/components/schemas/Invoice'
+      x-konfig-is-used-in-successful-response: true
+    update_invoice_request:
+      allOf:
+      - $ref: '#/components/schemas/InvoiceBase'
+      - $ref: '#/components/schemas/InvoiceUpdate'
+    card_terminals_request:
+      properties:
+        currency:
+          description: The abbreviation of card terminal's currency. Possible values
+            are CAD | USD
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-card_terminals_request-properties-currency
+        status:
+          description: The card terminal's status. possible values are ACTIVE | INACTIVE
+          example: ACTIVE
+          type: string
+          x-konfig-original-example: ACTIVE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-card_terminals_request-properties-status
+      type: object
+    PaymentRequest_invoice:
+      allOf:
+      - $ref: '#/components/schemas/InvoiceBase'
+      - $ref: '#/components/schemas/InvoiceCreateAfterProcessing'
+      description: To be filled when creating new invoice to be associated to transaction.
+        Will be linked to Customer owning the Card used
+    CardData_cardData: {}
+    VerifyRequest_invoice:
+      allOf:
+      - $ref: '#/components/schemas/InvoiceBase'
+      - $ref: '#/components/schemas/InvoiceCreateAfterProcessing'
+    BankData_bankData: {}
+    Card_1:
+      example:
+        cardF6L4: "5454545454"
+        cardHolderName: John Smith
+        cardToken: a1b2c3d4e5f6
+      properties:
+        cardHolderName:
+          description: The card holder name.
+          example: John Smith
+          type: string
+          x-konfig-original-example: John Smith
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Card_1-properties-cardHolderName
+        cardF6L4:
+          description: The F6L4 of card.
+          example: "5454545454"
+          type: string
+          x-konfig-original-example: "5454545454"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Card_1-properties-cardF6L4
+        cardToken:
+          description: Card token
+          example: a1b2c3d4e5f6
+          type: string
+          x-konfig-original-example: a1b2c3d4e5f6
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Card_1-properties-cardToken
+      title: Card
+      type: object
+    CardTerminal_address:
+      example:
+        country: CAN
+        province: AB
+        city: Calgary
+        postalCode: H0H0H0
+        street1: Street 1
+        street2: Street 2
+      properties:
+        street1:
+          example: Street 1
+          type: string
+          x-konfig-original-example: Street 1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardTerminal_address-properties-street1
+        street2:
+          example: Street 2
+          type: string
+          x-konfig-original-example: Street 2
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardTerminal_address-properties-street2
+        city:
+          example: Calgary
+          type: string
+          x-konfig-original-example: Calgary
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardTerminal_address-properties-city
+        province:
+          description: Abbreviation of province
+          example: AB
+          type: string
+          x-konfig-original-example: AB
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardTerminal_address-properties-province
+        country:
+          description: Abbreviation of country
+          example: CAN
+          type: string
+          x-konfig-original-example: CAN
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardTerminal_address-properties-country
+        postalCode:
+          description: Postal or zip code
+          example: H0H0H0
+          type: string
+          x-konfig-original-example: H0H0H0
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CardTerminal_address-properties-postalCode
+      type: object
+    HelcimPayInitializeRequest:
+      example:
+        amount: 100
+        hasConvenienceFee: 1
+        invoiceNumber: INV1000
+        customerCode: CST1000
+        paymentMethod: cc-ach
+        currency: CAD
+        allowPartial: 1
+        taxAmount: 3.67
+        paymentType: purchase
+      properties:
+        paymentType:
+          description: Payment Type. Valid payment types are purchase | preauth |
+            verify
+          example: purchase
+          type: string
+          x-konfig-original-example: purchase
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-paymentType
+        amount:
+          description: The amount of the transaction to be processed
+          example: 100
+          type: number
+          x-konfig-original-example: 100
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-amount
+        currency:
+          description: Currency abbreviation. CAD | USD
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-currency
+        customerCode:
+          description: This is the code of an existing customer in Helcim associated
+            with this checkout
+          example: CST1000
+          type: string
+          x-konfig-original-example: CST1000
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-customerCode
+        invoiceNumber:
+          description: This is the number of an existing invoice in Helcim associated
+            with this checkout
+          example: INV1000
+          type: string
+          x-konfig-original-example: INV1000
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-invoiceNumber
+        paymentMethod:
+          description: "This is the payment method (credit card, ACH) that customer\
+            \ can use to pay the amount. cc | ach | cc-ach"
+          example: cc-ach
+          type: string
+          x-konfig-original-example: cc-ach
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-paymentMethod
+        allowPartial:
+          description: This is used to determine whether the partial payment UI will
+            be displayed to the customer
+          example: 1
+          type: number
+          x-konfig-original-example: 1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-allowPartial
+        hasConvenienceFee:
+          description: This is used to apply the convenience fee rate to credit card
+            transaction should customer chooses this payment method
+          example: 1
+          type: number
+          x-konfig-original-example: 1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-hasConvenienceFee
+        taxAmount:
+          description: This is used to enable level 2 processing lower rates. The
+            value should be the dollar amount of the tax to 2 decimal places.
+          example: 3.67
+          type: number
+          x-konfig-original-example: 3.67
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-taxAmount
+      required:
+      - amount
+      - currency
+      - paymentType
+      title: Helcim Pay Initialize
+      type: object
+    checkout_init_200_response:
+      example:
+        checkoutToken: checkoutToken
+        secretToken: secretToken
+      properties:
+        checkoutToken:
+          description: The checkout token is used to initialize Helcim Pay
+          type: string
+        secretToken:
+          description: The secret token is used to validate the transaction response
+          type: string
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    checkout_init_default_response:
+      properties:
+        errors:
+          description: List of errors
+          items:
+            type: string
+          type: array
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    GeneralTestConnectivityToHelcimApiResponse:
+      example:
+        message: Connection Successful
+      title: Successful Connection Test
+      type: object
+      x-konfig-original-example:
+        message: Connection Successful
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-GeneralTestConnectivityToHelcimApiResponse
+      x-konfig-is-used-in-successful-response: true
+    GeneralTestConnectivityToHelcimApi400Response:
+      example:
+        errors: invalid businessId
+      title: Invalid Business ID
+      type: object
+      x-konfig-original-example:
+        errors: invalid businessId
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-GeneralTestConnectivityToHelcimApi400Response
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    GeneralTestConnectivityToHelcimApi401Response:
+      description: No API token was included in the request
+      title: No credentials included
+      type: object
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    GeneralTestConnectivityToHelcimApi403Response:
+      description: Invalid API token was included in the request
+      title: Forbidden
+      type: object
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    PaymentReverseTransactionResponse:
+      example: {}
+      properties: {}
+      type: object
+      x-konfig-original-example: {}
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentReverseTransactionResponse
+      x-konfig-is-used-in-successful-response: true
+    PaymentReverseTransactiondefaultResponse:
+      example: {}
+      properties: {}
+      type: object
+      x-konfig-original-example: {}
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentReverseTransactiondefaultResponse
+      x-konfig-is-used-in-successful-response: true
+    CustomerGetCardsResponse:
+      items:
+        $ref: '#/components/schemas/CardResponse'
+      type: array
+      x-konfig-is-used-in-successful-response: true
+    CustomerGetCardDetailsResponse:
+      items:
+        $ref: '#/components/schemas/CardResponse'
+      type: array
+      x-konfig-is-used-in-successful-response: true
+    CustomerGetBankAccountsResponse:
+      items:
+        $ref: '#/components/schemas/BankAccountResponse'
+      type: array
+      x-konfig-is-used-in-successful-response: true
+    CustomerGetBankAccountResponse:
+      items:
+        $ref: '#/components/schemas/BankAccountResponse'
+      type: array
+      x-konfig-is-used-in-successful-response: true
+    CustomerSetBankAccountDefaultResponse:
+      items:
+        $ref: '#/components/schemas/BankAccountResponse'
+      type: array
+      x-konfig-is-used-in-successful-response: true
+    CardBatchGetAllResponse:
+      description: Array of card batches
+      items:
+        $ref: '#/components/schemas/CardBatch'
+      type: array
+      x-konfig-is-used-in-successful-response: true
+    CardTransactionCollectTransactionsResponse:
+      description: Array of card transactions
+      items:
+        $ref: '#/components/schemas/SuccessfulPaymentResponse'
+      type: array
+      x-konfig-is-used-in-successful-response: true
+    CustomerListResponse:
+      items:
+        $ref: '#/components/schemas/Customer'
+      type: array
+      x-konfig-is-used-in-successful-response: true
+    InvoiceListResponse:
+      items:
+        $ref: '#/components/schemas/get_invoices_200_response_inner'
+      type: array
+      x-konfig-is-used-in-successful-response: true
+    CardTerminalGetAllResponse:
+      items:
+        $ref: '#/components/schemas/CardTerminal'
+      type: array
+      x-konfig-is-used-in-successful-response: true
+    konfig-generated-schema-components-schemas-PaymentRequest-properties-ipAddress:
+      example: 192.168.1.1
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-PaymentRequest-properties-ecommerce:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-PaymentRequest-properties-terminalId:
+      example: 3215
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-PaymentRequest-properties-currency:
+      example: CAD
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-PaymentRequest-properties-amount:
+      example: 100.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-PaymentRequest-properties-customerCode:
+      example: ""
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-PaymentRequest-properties-invoiceNumber:
+      example: ""
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-transactionId:
+      example: 10
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-cardBatchId:
+      example: 11
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-dateCreated:
+      example: 2020-01-01 00:00:00
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-status:
+      example: APPROVED
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-user:
+      example: Helcim System
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-type:
+      example: purchase
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-amount:
+      example: 11.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-currency:
+      example: CAD
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-avsResponse:
+      example: M
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-cvvResponse:
+      example: "Y"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-approvalCode:
+      example: HCMAPPRV
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-cardToken:
+      example: 5454HCMXTEST5454
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-cardNumber:
+      example: "5454545454"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-cardHolderName:
+      example: John Smith
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-customerCode:
+      example: CST1010
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-invoiceNumber:
+      example: INV2022
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulPaymentResponse-properties-warning:
+      example: Failed to link customer to invoice
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-FailedPaymentResponse-properties-errors-items:
+      example: An error occured
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CaptureRequest-properties-preAuthTransactionId:
+      example: 198763
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CaptureRequest-properties-amount:
+      example: 100.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CaptureRequest-properties-ipAddress:
+      example: 192.168.1.1
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CaptureRequest-properties-ecommerce:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-VerifyRequest-properties-ipAddress:
+      example: 192.168.1.1
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-VerifyRequest-properties-ecommerce:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-VerifyRequest-properties-currency:
+      example: CAD
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-VerifyRequest-properties-customerCode:
+      example: ""
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-VerifyRequest-properties-invoiceNumber:
+      example: ""
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-transactionId:
+      example: 10
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-batchId:
+      example: 11
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-dateCreated:
+      example: 2020-01-01 00:00:00
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-statusAuth:
+      example: APPROVED
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-statusClearing:
+      example: OPENED
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-type:
+      example: WITHDRAWAL
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-amount:
+      example: 11.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-currency:
+      example: CAD
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-approvalCode:
+      example: HCMAPPRV
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-bankAccountNumber:
+      example: A1B2C3D4E5F6G7
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-bankToken:
+      example: -A1B2C3D4E5F6G7*
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-SuccessfulAchTransactionResponse-properties-invoiceNumber:
+      example: INV2022
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-id:
+      example: 2488717
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-dateCreated:
+      example: 2022-11-30 13:14:53
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-dateUpdated:
+      example: 2022-11-30 13:14:53
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-dateClosed:
+      example: 2022-11-30 14:14:53
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-closed:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-terminalId:
+      example: 1411
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-batchNumber:
+      example: 6
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-netSales:
+      example: 90
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-totalSales:
+      example: 100
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-totalRefunds:
+      example: 8.5
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-totalReversed:
+      example: 5
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-totalRefundsReversed:
+      example: 3.5
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-countTotal:
+      example: 8
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-countApproved:
+      example: 8
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardBatch-properties-countDeclined:
+      example: 0
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Customer-properties-id:
+      example: 2488717
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Customer-properties-customerCode:
+      example: CST1200
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Customer-properties-businessName:
+      example: Best company
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Customer-properties-contactName:
+      example: John Smith
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Customer-properties-cellPhone:
+      example: 908-295-4902
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CustomerRequest-properties-customerCode:
+      example: CST1000
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CustomerRequest-properties-contactName:
+      example: John Smith
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CustomerRequest-properties-businessName:
+      example: Best Company
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CustomerRequest-properties-cellPhone:
+      example: 908-295-4902
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-customerCode:
+      example: CST1000
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-contactName:
+      example: John Smith
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-businessName:
+      example: Best Company
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-cellPhone:
+      example: 908-295-4902
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardResponse-properties-id:
+      example: 161462
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardResponse-properties-cardToken:
+      example: 907af81acc0224e0134949
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardResponse-properties-dateCreated:
+      example: 2025-01-30 13:35:36
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardResponse-properties-dateUpdated:
+      example: 2025-01-30 13:35:36
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardResponse-properties-cardHolderName:
+      example: John Smith
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardResponse-properties-cardF6L4:
+      example: "5454545454"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardResponse-properties-cardExpiry:
+      example: "1257"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardResponse-properties-cardCVV:
+      example: "100"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-id:
+      example: 12312
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-customerId:
+      example: 2222
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-dateCreated:
+      example: 2025-01-30 13:35:36
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-dateUpdated:
+      example: 2025-01-30 13:35:36
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-dateLastUsed:
+      example: 2025-01-30 13:35:36
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-dateVerified:
+      example: 2025-01-30 13:35:36
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-bankToken:
+      example: JHKJHKLKJLOHKJ876545KJBK
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-accountType:
+      example: CHECKING
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-accountCorporate:
+      example: PERSONAL
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-verified:
+      example: "1"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-ready:
+      example: "1"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-bankIdNumber:
+      example: "333"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-transitNumber:
+      example: "55555"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-routingNumber:
+      example: "999999999"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccountResponse-properties-bankAccountNumberL4:
+      example: "9999"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceResponseBase-properties-invoiceId:
+      example: 12321
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceResponseBase-properties-invoiceNumber:
+      example: INV1000
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceResponseBase-properties-tipAmount:
+      example: 0.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceResponseBase-properties-depositAmount:
+      example: 1
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceResponseBase-properties-notes:
+      example: No vegetables please
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Invoice-properties-dateCreated:
+      example: 2020-01-01 00:30:50
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Invoice-properties-dateUpdated:
+      example: 2020-01-01 20:30:50
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Invoice-properties-datePaid:
+      example: 2020-01-01 00:30:50
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Invoice-properties-dateIssued:
+      example: 2020-01-01 00:30:50
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Invoice-properties-status:
+      example: due
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Invoice-properties-customerId:
+      example: 234
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Invoice-properties-amount:
+      example: 100.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Invoice-properties-convenienceFee:
+      example: 100
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceBase-properties-invoiceNumber:
+      example: ""
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceBase-properties-tipAmount:
+      example: 0.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceBase-properties-depositAmount:
+      example: 1
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceBase-properties-notes:
+      example: No vegetables please
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceCreate-properties-customerId:
+      example: 123123
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceCreate-properties-currency:
+      example: CAD
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceCreate-properties-type:
+      example: INVOICE
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceCreate-properties-status:
+      example: DUE
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceUpdate-properties-currency:
+      example: CAD
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceUpdate-properties-type:
+      example: INVOICE
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InvoiceUpdate-properties-status:
+      example: DUE
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardTerminal-properties-id:
+      example: 123
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardTerminal-properties-nickname:
+      example: Terminal 1
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardTerminal-properties-currency:
+      example: CAD
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardTerminal-properties-status:
+      example: ACTIVE
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Address-properties-name:
+      example: John Smith / Helcim
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Address-properties-street1:
+      example: Jump Street 21
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Address-properties-city:
+      example: Calgary
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Address-properties-province:
+      example: AB
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Address-properties-country:
+      example: CAN
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Address-properties-postalCode:
+      example: H0H0H0
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Address-properties-phone:
+      example: "4031231234"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Address-properties-email:
+      example: john@example.com
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Card-properties-cardNumber:
+      example: "5454545454545454"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Card-properties-cardExpiry:
+      example: "1257"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Card-properties-cardCVV:
+      example: "100"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardToken-properties-cardToken:
+      example: HGKHJK5647698HGJJK
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-firstName:
+      example: John
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-lastName:
+      example: Smith
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-companyName:
+      example: Microsoft
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-bankAccountNumber:
+      example: "999999999"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-accountType:
+      example: CHECKING
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-accountCorporate:
+      example: PERSONAL
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-bankIdNumber:
+      example: "888"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-transitNumber:
+      example: "55555"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-routingNumber:
+      example: "123456789"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-streetAddress:
+      example: 440 - something
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-city:
+      example: Calgary
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-country:
+      example: CAN
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-province:
+      example: AB
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-postalCode:
+      example: T2T2T2
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankAccount-properties-padAgreement:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-BankToken-properties-bankToken:
+      example: HGKHJK5647698HGJJK
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Shipping-properties-amount:
+      example: 10.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Shipping-properties-details:
+      example: Canada Post 1 day shipping
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Pickup-properties-date:
+      example: 2022-01-25 13:55:55
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Pickup-properties-name:
+      example: Jane Smith
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Tax-properties-amount:
+      example: 5.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Tax-properties-details:
+      example: GST 5%
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Discount-properties-amount:
+      example: 10.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Discount-properties-details:
+      example: DISC100
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-LineItem-properties-description:
+      example: Red Hat
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-LineItem-properties-sku:
+      example: ITM1434
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-LineItem-properties-quantity:
+      example: 10.5
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-LineItem-properties-price:
+      example: 10.55
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-LineItem-properties-total:
+      example: 110.78
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-LineItem-properties-taxAmount:
+      example: 0
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-LineItem-properties-discountAmount:
+      example: 0
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Refund_Request-properties-originalTransactionId:
+      example: 198763
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Refund_Request-properties-amount:
+      example: 100.99
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Refund_Request-properties-ipAddress:
+      example: 192.168.1.1
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Refund_Request-properties-ecommerce:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Refund_Request_1-properties-cardTransactionId:
+      example: 198763
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Refund_Request_1-properties-ipAddress:
+      example: 192.168.1.1
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Refund_Request_1-properties-ecommerce:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-card_terminals_request-properties-currency:
+      example: CAD
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-card_terminals_request-properties-status:
+      example: ACTIVE
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Card_1-properties-cardHolderName:
+      example: John Smith
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Card_1-properties-cardF6L4:
+      example: "5454545454"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Card_1-properties-cardToken:
+      example: a1b2c3d4e5f6
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardTerminal_address-properties-street1:
+      example: Street 1
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardTerminal_address-properties-street2:
+      example: Street 2
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardTerminal_address-properties-city:
+      example: Calgary
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardTerminal_address-properties-province:
+      example: AB
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardTerminal_address-properties-country:
+      example: CAN
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-CardTerminal_address-properties-postalCode:
+      example: H0H0H0
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-paymentType:
+      example: purchase
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-amount:
+      example: 100
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-currency:
+      example: CAD
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-customerCode:
+      example: CST1000
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-invoiceNumber:
+      example: INV1000
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-paymentMethod:
+      example: cc-ach
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-allowPartial:
+      example: 1
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-hasConvenienceFee:
+      example: 1
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-taxAmount:
+      example: 3.67
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-GeneralTestConnectivityToHelcimApiResponse:
+      example:
+        message: Connection Successful
+      properties:
+        message:
+          example: Connection Successful
+          type: string
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-GeneralTestConnectivityToHelcimApi400Response:
+      example:
+        errors: invalid businessId
+      properties:
+        errors:
+          example: invalid businessId
+          type: string
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-PaymentReverseTransactionResponse:
+      example: {}
+      properties: {}
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-PaymentReverseTransactiondefaultResponse:
+      example: {}
+      properties: {}
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-single-parameter-schema-get--connection-test:
+      properties: {}
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    konfig-generated-schema-single-parameter-schema-post--payment-purchase:
+      properties:
+        idempotency-key:
+          format: uuid
+          type: string
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-ecommerce
+        terminalId:
+          description: For card transactions only. Id of the terminal you would want
+            to use. Default terminal for of the currency will be used if you dont
+            send this.
+          example: 3215
+          type: integer
+          x-konfig-original-example: 3215
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-terminalId
+        currency:
+          description: "The currency abbreviation of the invoice, such as CAD or USD.\
+            \ This should match currency of existing invoice."
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-currency
+        amount:
+          description: Amount to be processed
+          example: 100.99
+          type: number
+          x-konfig-original-example: 100.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-amount
+        customerCode:
+          description: Existing customer code associated with the transaction
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-customerCode
+        invoiceNumber:
+          description: To be filled when associating transaction to existing invoice.
+            Invoice should be associated to the same customer linked to the card
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-invoiceNumber
+        invoice:
+          $ref: '#/components/schemas/PaymentRequest_invoice'
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        cardData:
+          $ref: '#/components/schemas/CardData_cardData'
+      required:
+      - amount
+      - cardData
+      - currency
+      - idempotency-key
+      - ipAddress
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - idempotency-key
+    konfig-generated-schema-single-parameter-schema-post--payment-preauth:
+      properties:
+        idempotency-key:
+          format: uuid
+          type: string
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-ecommerce
+        terminalId:
+          description: For card transactions only. Id of the terminal you would want
+            to use. Default terminal for of the currency will be used if you dont
+            send this.
+          example: 3215
+          type: integer
+          x-konfig-original-example: 3215
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-terminalId
+        currency:
+          description: "The currency abbreviation of the invoice, such as CAD or USD.\
+            \ This should match currency of existing invoice."
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-currency
+        amount:
+          description: Amount to be processed
+          example: 100.99
+          type: number
+          x-konfig-original-example: 100.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-amount
+        customerCode:
+          description: Existing customer code associated with the transaction
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-customerCode
+        invoiceNumber:
+          description: To be filled when associating transaction to existing invoice.
+            Invoice should be associated to the same customer linked to the card
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-invoiceNumber
+        invoice:
+          $ref: '#/components/schemas/PaymentRequest_invoice'
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        cardData:
+          $ref: '#/components/schemas/CardData_cardData'
+      required:
+      - amount
+      - cardData
+      - currency
+      - idempotency-key
+      - ipAddress
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - idempotency-key
+    konfig-generated-schema-single-parameter-schema-post--payment-capture:
+      properties:
+        idempotency-key:
+          format: uuid
+          type: string
+        preAuthTransactionId:
+          description: The transaction ID of the original pre-authorization transaction.
+          example: 198763
+          type: integer
+          x-konfig-original-example: 198763
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CaptureRequest-properties-preAuthTransactionId
+        amount:
+          description: The amount to capture. Must be less or equal to the original
+            pre-authorization amount.
+          example: 100.99
+          type: number
+          x-konfig-original-example: 100.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CaptureRequest-properties-amount
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CaptureRequest-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CaptureRequest-properties-ecommerce
+      required:
+      - amount
+      - idempotency-key
+      - ipAddress
+      - preAuthTransactionId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - idempotency-key
+    konfig-generated-schema-single-parameter-schema-post--payment-verify:
+      properties:
+        idempotency-key:
+          format: uuid
+          type: string
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-VerifyRequest-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-VerifyRequest-properties-ecommerce
+        currency:
+          description: The currency abbreviation of the transaction.
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-VerifyRequest-properties-currency
+        customerCode:
+          description: Existing customer code associated with the transaction
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-VerifyRequest-properties-customerCode
+        invoiceNumber:
+          description: To be filled when associating transaction to existing invoice.
+            Invoice should be associated to the same customer linked to the card
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-VerifyRequest-properties-invoiceNumber
+        invoice:
+          $ref: '#/components/schemas/VerifyRequest_invoice'
+        cardData:
+          $ref: '#/components/schemas/Card'
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+      required:
+      - amount
+      - billingAddress
+      - cardData
+      - currency
+      - idempotency-key
+      - ipAddress
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - idempotency-key
+    konfig-generated-schema-single-parameter-schema-post--payment-refund:
+      properties:
+        idempotency-key:
+          format: uuid
+          type: string
+        originalTransactionId:
+          description: The transaction ID of the purchase/capture transaction.
+          example: 198763
+          type: integer
+          x-konfig-original-example: 198763
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request-properties-originalTransactionId
+        amount:
+          description: The amount to refund. Must be less or equal to the original
+            purchase/capture amount.
+          example: 100.99
+          type: number
+          x-konfig-original-example: 100.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request-properties-amount
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request-properties-ecommerce
+      required:
+      - amount
+      - idempotency-key
+      - ipAddress
+      - originalTransactionId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - idempotency-key
+    konfig-generated-schema-single-parameter-schema-post--payment-reverse:
+      properties:
+        idempotency-key:
+          format: uuid
+          type: string
+        cardTransactionId:
+          description: The transaction ID of the original transaction.
+          example: 198763
+          type: integer
+          x-konfig-original-example: 198763
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request_1-properties-cardTransactionId
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request_1-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Refund_Request_1-properties-ecommerce
+      required:
+      - cardTransactionId
+      - idempotency-key
+      - ipAddress
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - idempotency-key
+    konfig-generated-schema-single-parameter-schema-post--payment-withdraw:
+      properties:
+        idempotency-key:
+          format: uuid
+          type: string
+        ipAddress:
+          description: "IP address of the customer making the transaction, used as\
+            \ part of fraud detection."
+          example: 192.168.1.1
+          type: string
+          x-konfig-original-example: 192.168.1.1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-ipAddress
+        ecommerce:
+          description: "Set to indicate that the transaction is e-commerce. When set,\
+            \ the Helcim Fraud Defender will provide further analysis."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-ecommerce
+        terminalId:
+          description: For card transactions only. Id of the terminal you would want
+            to use. Default terminal for of the currency will be used if you dont
+            send this.
+          example: 3215
+          type: integer
+          x-konfig-original-example: 3215
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-terminalId
+        currency:
+          description: "The currency abbreviation of the invoice, such as CAD or USD.\
+            \ This should match currency of existing invoice."
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-currency
+        amount:
+          description: Amount to be processed
+          example: 100.99
+          type: number
+          x-konfig-original-example: 100.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-amount
+        customerCode:
+          description: Existing customer code associated with the transaction
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-customerCode
+        invoiceNumber:
+          description: To be filled when associating transaction to existing invoice.
+            Invoice should be associated to the same customer linked to the card
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-PaymentRequest-properties-invoiceNumber
+        invoice:
+          $ref: '#/components/schemas/PaymentRequest_invoice'
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        bankData:
+          $ref: '#/components/schemas/BankData_bankData'
+      required:
+      - amount
+      - bankData
+      - cardData
+      - currency
+      - idempotency-key
+      - ipAddress
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - idempotency-key
+    konfig-generated-schema-single-parameter-schema-get--card-batches-cardBatchId:
+      properties:
+        cardBatchId:
+          type: integer
+        collect-stats:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      required:
+      - cardBatchId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - cardBatchId
+      - collect-stats
+    konfig-generated-schema-single-parameter-schema-post--card-batches-cardBatchId-settle:
+      properties:
+        cardBatchId:
+          type: integer
+      required:
+      - cardBatchId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - cardBatchId
+    konfig-generated-schema-single-parameter-schema-get--card-transactions-cardTransactionId:
+      properties:
+        cardTransactionId:
+          type: integer
+      required:
+      - cardTransactionId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - cardTransactionId
+    konfig-generated-schema-single-parameter-schema-get--customers-customerId:
+      properties:
+        customerId:
+          type: integer
+      required:
+      - customerId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - customerId
+    konfig-generated-schema-single-parameter-schema-put--customers-customerId:
+      properties:
+        customerId:
+          type: string
+        customerCode:
+          description: The unique customer code.
+          example: CST1000
+          type: string
+          x-konfig-original-example: CST1000
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-customerCode
+        contactName:
+          description: The primary contact name (full name) of the customer.
+          example: John Smith
+          type: string
+          x-konfig-original-example: John Smith
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-contactName
+        businessName:
+          description: The business name of the customer. There must be either a contact
+            name or business name present.
+          example: Best Company
+          type: string
+          x-konfig-original-example: Best Company
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-businessName
+        cellPhone:
+          description: The cell phone number of the customer.
+          example: 908-295-4902
+          type: string
+          x-konfig-original-example: 908-295-4902
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerUpdateRequest-properties-cellPhone
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+      required:
+      - customerId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - customerId
+    konfig-generated-schema-single-parameter-schema-get--customers-customerId-cards:
+      properties:
+        customerId:
+          type: integer
+        cardToken:
+          type: string
+      required:
+      - customerId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - customerId
+      - cardToken
+    konfig-generated-schema-single-parameter-schema-get--customers-customerId-cards-cardId:
+      properties:
+        customerId:
+          type: integer
+        cardId:
+          type: integer
+      required:
+      - cardId
+      - customerId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - customerId
+      - cardId
+    konfig-generated-schema-single-parameter-schema-get--customers-customerId-bank-accounts:
+      properties:
+        customerId:
+          type: integer
+        bankToken:
+          type: string
+        verified:
+          type: number
+        ready:
+          type: number
+      required:
+      - customerId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - customerId
+      - bankToken
+      - verified
+      - ready
+    konfig-generated-schema-single-parameter-schema-get--customers-customerId-bank-accounts-bankAccountId:
+      properties:
+        customerId:
+          type: integer
+        bankAccountId:
+          type: integer
+      required:
+      - bankAccountId
+      - customerId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - customerId
+      - bankAccountId
+    konfig-generated-schema-single-parameter-schema-patch--customers-customerId-bank-accounts-bankAccountId-default:
+      properties:
+        customerId:
+          type: integer
+        bankAccountId:
+          type: integer
+      required:
+      - bankAccountId
+      - customerId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - customerId
+      - bankAccountId
+    konfig-generated-schema-single-parameter-schema-get--invoices-invoiceId:
+      properties:
+        invoiceId:
+          type: string
+      required:
+      - invoiceId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - invoiceId
+    konfig-generated-schema-single-parameter-schema-put--invoices-invoiceId:
+      properties:
+        invoiceId:
+          type: string
+        invoiceNumber:
+          description: Invoice number of invoice to be created. Will be generated
+            if blank
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-invoiceNumber
+        tipAmount:
+          description: Tip amount
+          example: 0.99
+          type: number
+          x-konfig-original-example: 0.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-tipAmount
+        depositAmount:
+          description: Deposit amount
+          example: 1
+          type: number
+          x-konfig-original-example: 1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-depositAmount
+        notes:
+          description: "Comment to appear at the bottom of the invoice, visible to\
+            \ the customer."
+          example: No vegetables please
+          type: string
+          x-konfig-original-example: No vegetables please
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-notes
+        currency:
+          description: "The currency abbreviation of the invoice, such as CAD or USD.\
+            \ This should match currency of existing invoice."
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceUpdate-properties-currency
+        type:
+          description: "The type of the invoice, such as ESTIMATE | INVOICE | QUOTE\
+            \ | ORDER | PURCHASE_ORDER | STATEMENT | REGISTRATION | CREDIT."
+          example: INVOICE
+          type: string
+          x-konfig-original-example: INVOICE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceUpdate-properties-type
+        status:
+          description: "The status of invoice, such as DUE | SHIPPED | COMPLETED |\
+            \ CANCELLED"
+          example: DUE
+          type: string
+          x-konfig-original-example: DUE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceUpdate-properties-status
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+      required:
+      - invoiceId
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - invoiceId
+    konfig-generated-schema-single-parameter-schema-post--helcim-pay-initialize:
+      properties:
+        paymentType:
+          description: Payment Type. Valid payment types are purchase | preauth |
+            verify
+          example: purchase
+          type: string
+          x-konfig-original-example: purchase
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-paymentType
+        amount:
+          description: The amount of the transaction to be processed
+          example: 100
+          type: number
+          x-konfig-original-example: 100
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-amount
+        currency:
+          description: Currency abbreviation. CAD | USD
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-currency
+        customerCode:
+          description: This is the code of an existing customer in Helcim associated
+            with this checkout
+          example: CST1000
+          type: string
+          x-konfig-original-example: CST1000
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-customerCode
+        invoiceNumber:
+          description: This is the number of an existing invoice in Helcim associated
+            with this checkout
+          example: INV1000
+          type: string
+          x-konfig-original-example: INV1000
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-invoiceNumber
+        paymentMethod:
+          description: "This is the payment method (credit card, ACH) that customer\
+            \ can use to pay the amount. cc | ach | cc-ach"
+          example: cc-ach
+          type: string
+          x-konfig-original-example: cc-ach
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-paymentMethod
+        allowPartial:
+          description: This is used to determine whether the partial payment UI will
+            be displayed to the customer
+          example: 1
+          type: number
+          x-konfig-original-example: 1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-allowPartial
+        hasConvenienceFee:
+          description: This is used to apply the convenience fee rate to credit card
+            transaction should customer chooses this payment method
+          example: 1
+          type: number
+          x-konfig-original-example: 1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-hasConvenienceFee
+        taxAmount:
+          description: This is used to enable level 2 processing lower rates. The
+            value should be the dollar amount of the tax to 2 decimal places.
+          example: 3.67
+          type: number
+          x-konfig-original-example: 3.67
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-HelcimPayInitializeRequest-properties-taxAmount
+      required:
+      - amount
+      - currency
+      - paymentType
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    konfig-generated-schema-single-parameter-schema-get--card-batches:
+      properties:
+        batchNumber:
+          type: number
+        terminalId:
+          type: number
+        collect-stats:
+          enum:
+          - "true"
+          - "false"
+          type: string
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - batchNumber
+      - terminalId
+      - collect-stats
+    konfig-generated-schema-single-parameter-schema-get--card-transactions:
+      properties:
+        dateFrom:
+          type: string
+        dateTo:
+          type: string
+        search:
+          type: string
+        customerCode:
+          type: string
+        invoiceNumber:
+          type: string
+        cardToken:
+          type: string
+        cardBatchId:
+          type: integer
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - dateFrom
+      - dateTo
+      - search
+      - customerCode
+      - invoiceNumber
+      - cardToken
+      - cardBatchId
+    konfig-generated-schema-single-parameter-schema-get--customers:
+      properties:
+        search:
+          type: string
+        customerCode:
+          type: string
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - search
+      - customerCode
+    konfig-generated-schema-single-parameter-schema-post--customers:
+      properties:
+        customerCode:
+          description: "The unique customer code. If blank, it will be automatically\
+            \ generated."
+          example: CST1000
+          type: string
+          x-konfig-original-example: CST1000
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerRequest-properties-customerCode
+        contactName:
+          description: The primary contact name (full name) of the customer.
+          example: John Smith
+          type: string
+          x-konfig-original-example: John Smith
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerRequest-properties-contactName
+        businessName:
+          description: The business name of the customer. There must be either a contact
+            name or business name present.
+          example: Best Company
+          type: string
+          x-konfig-original-example: Best Company
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerRequest-properties-businessName
+        cellPhone:
+          description: The cell phone number of the customer.
+          example: 908-295-4902
+          type: string
+          x-konfig-original-example: 908-295-4902
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-CustomerRequest-properties-cellPhone
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    konfig-generated-schema-single-parameter-schema-get--invoices:
+      properties:
+        invoiceNumber:
+          type: string
+        dateStart:
+          type: string
+        dateEnd:
+          type: string
+        withConvenienceFee:
+          type: integer
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - invoiceNumber
+      - dateStart
+      - dateEnd
+      - withConvenienceFee
+    konfig-generated-schema-single-parameter-schema-post--invoices:
+      properties:
+        invoiceNumber:
+          description: Invoice number of invoice to be created. Will be generated
+            if blank
+          example: ""
+          type: string
+          x-konfig-original-example: ""
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-invoiceNumber
+        tipAmount:
+          description: Tip amount
+          example: 0.99
+          type: number
+          x-konfig-original-example: 0.99
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-tipAmount
+        depositAmount:
+          description: Deposit amount
+          example: 1
+          type: number
+          x-konfig-original-example: 1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-depositAmount
+        notes:
+          description: "Comment to appear at the bottom of the invoice, visible to\
+            \ the customer."
+          example: No vegetables please
+          type: string
+          x-konfig-original-example: No vegetables please
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceBase-properties-notes
+        customerId:
+          description: Unique customer Id.
+          example: 123123
+          type: integer
+          x-konfig-original-example: 123123
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceCreate-properties-customerId
+        currency:
+          description: "The currency abbreviation of the invoice, such as CAD or USD.\
+            \ This should match currency of existing invoice."
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceCreate-properties-currency
+        type:
+          description: "The type of the invoice, such as ESTIMATE | INVOICE | QUOTE\
+            \ | ORDER | PURCHASE_ORDER | STATEMENT | REGISTRATION | CREDIT."
+          example: INVOICE
+          type: string
+          x-konfig-original-example: INVOICE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceCreate-properties-type
+        status:
+          description: "The status of invoice, such as DUE | SHIPPED | COMPLETED |\
+            \ CANCELLED"
+          example: DUE
+          type: string
+          x-konfig-original-example: DUE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InvoiceCreate-properties-status
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        shipping:
+          $ref: '#/components/schemas/Shipping'
+        pickup:
+          $ref: '#/components/schemas/Pickup'
+        tax:
+          $ref: '#/components/schemas/Tax'
+        discount:
+          $ref: '#/components/schemas/Discount'
+        lineItems:
+          items:
+            $ref: '#/components/schemas/LineItem'
+          maxLength: 10
+          type: array
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    konfig-generated-schema-single-parameter-schema-get--card-terminals:
+      properties:
+        currency:
+          description: The abbreviation of card terminal's currency. Possible values
+            are CAD | USD
+          example: CAD
+          type: string
+          x-konfig-original-example: CAD
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-card_terminals_request-properties-currency
+        status:
+          description: The card terminal's status. possible values are ACTIVE | INACTIVE
+          example: ACTIVE
+          type: string
+          x-konfig-original-example: ACTIVE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-card_terminals_request-properties-status
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+  securitySchemes:
+    ApiAccessAuth:
+      description: API Token
+      in: header
+      name: api-token
+      type: apiKey
+      x-konfig-globally-required-security: true
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true
+  samples-enabled: true
+
